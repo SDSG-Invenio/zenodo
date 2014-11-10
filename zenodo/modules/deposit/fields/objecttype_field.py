@@ -37,6 +37,11 @@ UPLOAD_TYPES = [
     ('software', 'Software', [], 'fa fa-cogs fa-2x fa-fw'),
 ]
 
+UPLOAD_TYPES = [
+    ('single', 'Single record', [], 'fa fa-file-text-o fa-2x fa-fw'),
+    ('batch', 'Batch of records', [], 'fa fa-list-alt fa-2x fa-fw'),
+]
+
 UPLOAD_TYPE_ICONS = dict([(t[0], t[3]) for t in UPLOAD_TYPES])
 
 

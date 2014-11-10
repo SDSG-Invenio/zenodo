@@ -22,15 +22,20 @@
     {% endif%}
     {{ bfe_isbn(bfo, prefix='<dt>ISBN:</dt><dd itemprop="isbn">', suffix='</dd>') }}
     {{ bfe_report_numbers(bfo, prefix='<dt>Report number(s):</dt><dd>', suffix='</dd>') }}
-    {{ bfe_keywords(bfo, prefix='<dt>Keyword(s):</dt><dd>', suffix='</dd>', keyword_prefix='<span class="label label-default" itemprop="keywords">', keyword_suffix='</span>', separator=' ') }}
+    {{ bfe_dec(bfo, prefix='<dt>DEC:</dt><dd>', suffix='</dd>', keyword_prefix='<span class="label label-default" itemprop="keywords">', keyword_suffix='</span>', separator=' ') }}
+    {{ bfe_dei(bfo, prefix='<dt>DEI:</dt><dd>', suffix='</dd>', keyword_prefix='<span class="label label-default" itemprop="keywords">', keyword_suffix='</span>', separator=' ') }}
     {{ bfe_publi_info(bfo, prefix='<dt>Published in:</dt><dd>', suffix='</dd>') }}
     {{ bfe_openaire_published_in_book(bfo, prefix='<dt>Published in:</dt><dd>', suffix='</dd>') }}
     {{ bfe_publisher(bfo, prefix='<dt>Publisher:</dt><dd>', suffix='</dd>') }}
     {{ bfe_place(bfo, prefix='<dd>', suffix='</dd>') }}
+    {{ bfe_language(bfo, prefix='<dt>Language:</dt><dd>', suffix='</dd>') }}
+    {{ bfe_country(bfo, prefix='<dt>Country:</dt><dd>', suffix='</dd>') }}
     {{ bfe_field(bfo, escape="0", tag="536__a", prefix='<dt>Grants:</dt><dd>', suffix='</dd>', instances_separator='<br />') }}
     {{ bfe_openaire_university(bfo, prefix='<dt>Thesis:</dt><dd>', suffix='</dd>') }}
     {{ bfe_openaire_meeting(bfo, prefix='<dt>Meeting:</dt><dd>', suffix='</dd>') }}
     {{ bfe_pagination(bfo, prefix='<dt>Pages:</dt><dd itemprop="numberOfPages">', suffix='</dd>', default='', escape='') }}
+    <dt>INIS volume:</dt>
+	<dd>Volume {{bfo.field('888__a')}} - Issue {{bfo.field('888__b')}}</dd>
     {%- for group in record.related_identifiers|groupby('relation') %}
     {%- if loop.first %}<dt>Related publications and datasets:</dt>{% endif %}
         <dd>{{group.grouper|relation_title}}:<br />

@@ -31,6 +31,7 @@ from wtforms.validators import ValidationError
 
 from invenio.config import CFG_SITE_NAME, CFG_SITE_SUPPORT_EMAIL
 from invenio.config import CFG_DATACITE_DOI_PREFIX
+#from invenio.config import CFG_COUNTRY_LIST
 
 from invenio.base.i18n import _
 from invenio.utils.html import CFG_HTML_BUFFER_ALLOWED_TAG_WHITELIST
@@ -396,6 +397,14 @@ class ZenodoForm(WebDepositForm):
         widget=date_widget,
         widget_classes='input-sm',
     )
+
+    country = fields.TextField(
+	label=_('Member state'),
+	icon='fa fa-globe',
+	description='Memeber state that uploads the record',
+	validators=[validators.required()],
+    )
+
     title = fields.TitleField(
         validators=[validators.required()],
         description='Required.',
@@ -785,7 +794,7 @@ class ZenodoForm(WebDepositForm):
             ['upload_type', 'publication_type', 'image_type', ],
             {'indication': 'required'}),
         ('Basic information', [
-            'doi', 'prereserve_doi', 'publication_date', 'title',  'creators', 'description',
+            'doi', 'prereserve_doi', 'publication_date', 'country', 'title',  'creators', 'description',
             'keywords', 'notes',
         ], {'indication': 'required', }),
         ('License', [
