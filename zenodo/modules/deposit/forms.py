@@ -23,13 +23,13 @@
 from __future__ import absolute_import
 
 import json
-from datetime import date
-from jinja2 import Markup
+#from datetime import date
+#from jinja2 import Markup
 from flask import request
 from wtforms import validators, widgets
 from wtforms.validators import ValidationError
 
-from invenio.config import CFG_SITE_NAME, CFG_SITE_SUPPORT_EMAIL
+#from invenio.config import CFG_SITE_NAME, CFG_SITE_SUPPORT_EMAIL
 from invenio.config import CFG_DATACITE_DOI_PREFIX
 #from invenio.config import CFG_COUNTRY_LIST
 
@@ -37,9 +37,10 @@ from invenio.base.i18n import _
 from invenio.utils.html import CFG_HTML_BUFFER_ALLOWED_TAG_WHITELIST
 from invenio.modules.knowledge.api import get_kb_mapping
 from invenio.modules.deposit.form import WebDepositForm
-from invenio.modules.deposit.field_widgets import date_widget, \
-    plupload_widget, ButtonWidget, ExtendedListWidget, \
-    TagListWidget, TagInput, ItemWidget, CKEditorWidget, ColumnInput
+from invenio.modules.deposit.field_widgets import plupload_widget, \
+    ExtendedListWidget, TagListWidget, TagInput, ItemWidget, \
+    CKEditorWidget, ColumnInput
+#    date_widget, ButtonWidget
 from invenio.modules.deposit.filter_utils import strip_string, sanitize_html
 from invenio.modules.deposit.validation_utils import DOISyntaxValidator, \
     invalid_doi_prefix_validator, pre_reserved_doi_validator, required_if, \
@@ -48,7 +49,7 @@ from invenio.modules.deposit.validation_utils import DOISyntaxValidator, \
 from invenio.modules.deposit.processor_utils import datacite_lookup, \
     PidSchemeDetection, PidNormalize, replace_field_data
 from invenio.modules.deposit.autocomplete_utils import kb_autocomplete
-from ...legacy.utils.zenodoutils import create_doi, filter_empty_helper
+#from ...legacy.utils.zenodoutils import create_doi, filter_empty_helper
 
 from .autocomplete import community_autocomplete
 from .validators import community_validator
@@ -351,59 +352,59 @@ class ZenodoForm(WebDepositForm):
     #
     # Basic information
     #
-    doi = fields.DOIField(
-        label="Digital Object Identifier",
-        description="Optional. Did your publisher already assign a DOI to your"
-        " upload? If not, leave the field empty and we will register a new"
-        " DOI for you. A DOI allow others to easily and unambiguously cite"
-        " your upload.",
-        placeholder="e.g. 10.1234/foo.bar...",
-        validators=[
-            DOISyntaxValidator(),
-            pre_reserved_doi_validator(
-                'prereserve_doi',
-                prefix=CFG_DATACITE_DOI_PREFIX
-            ),
-            invalid_doi_prefix_validator(prefix=CFG_DATACITE_DOI_PREFIX),
-        ],
-        processors=[
-            local_datacite_lookup
-        ],
-        export_key='doi',
-        icon='fa fa-barcode fa-fw',
-    )
-    prereserve_doi = zfields.ReserveDOIField(
-        label="",
-        doi_field="doi",
-        doi_creator=create_doi,
-        widget=ButtonWidget(
-            label=_("Pre-reserve DOI"),
-            icon='fa fa-barcode',
-            tooltip=_(
-                'Pre-reserve a Digital Object Identifier for your upload. This'
-                ' allows you know the DOI before you submit your upload, and'
-                ' can thus include it in e.g. publications. The DOI is not'
-                ' finally registered until submit your upload.'
-            ),
-        ),
-    )
-    publication_date = fields.Date(
-        label=_('Publication date'),
-        icon='fa fa-calendar fa-fw',
-        description='Required. Format: YYYY-MM-DD. The date your upload was '
-        'made available in case it was already published elsewhere.',
-        default=date.today(),
-        validators=[validators.required()],
-        widget=date_widget,
-        widget_classes='input-sm',
-    )
+#    doi = fields.DOIField(
+#        label="Digital Object Identifier",
+#        description="Optional. Did your publisher already assign a DOI to your"
+#        " upload? If not, leave the field empty and we will register a new"
+#        " DOI for you. A DOI allow others to easily and unambiguously cite"
+#        " your upload.",
+#        placeholder="e.g. 10.1234/foo.bar...",
+#        validators=[
+#            doi_syntax_validator,
+#            pre_reserved_doi_validator(
+#                'prereserve_doi',
+#                prefix=CFG_DATACITE_DOI_PREFIX
+#            ),
+#            invalid_doi_prefix_validator(prefix=CFG_DATACITE_DOI_PREFIX),
+#        ],
+#        processors=[
+#            local_datacite_lookup
+#        ],
+#        export_key='doi',
+#        icon='fa fa-barcode fa-fw',
+#    )
+#    prereserve_doi = zfields.ReserveDOIField(
+#        label="",
+#        doi_field="doi",
+#        doi_creator=create_doi,
+#        widget=ButtonWidget(
+#            label=_("Pre-reserve DOI"),
+#            icon='fa fa-barcode',
+#            tooltip=_(
+#                'Pre-reserve a Digital Object Identifier for your upload. This'
+#                ' allows you know the DOI before you submit your upload, and'
+#                ' can thus include it in e.g. publications. The DOI is not'
+#                ' finally registered until submit your upload.'
+#            ),
+#        ),
+#    )
+#    publication_date = fields.Date(
+#        label=_('Publication date'),
+#        icon='fa fa-calendar fa-fw',
+#        description='Required. Format: YYYY-MM-DD. The date your upload was '
+#        'made available in case it was already published elsewhere.',
+#        default=date.today(),
+#        validators=[validators.required()],
+#        widget=date_widget,
+#        widget_classes='input-sm',
+#    )
 
-    country = fields.TextField(
-	label=_('Member state'),
-	icon='fa fa-globe',
-	description='Memeber state that uploads the record',
-	validators=[validators.required()],
-    )
+#    country = fields.TextField(
+#	label=_('Member state'),
+#	icon='fa fa-globe',
+#	description='Memeber state that uploads the record',
+#	validators=[validators.required()],
+#    )
 
     title = fields.TitleField(
         validators=[validators.required()],
@@ -414,30 +415,30 @@ class ZenodoForm(WebDepositForm):
         export_key='title',
         icon='fa fa-book fa-fw',
     )
-    creators = fields.DynamicFieldList(
-        fields.FormField(
-            CreatorForm,
-            widget=ExtendedListWidget(
-                item_widget=ItemWidget(),
-                html_tag='div'
-            ),
-        ),
-        label='Authors',
-        add_label='Add another author',
-        icon='fa fa-user fa-fw',
-        widget_classes='',
-        min_entries=1,
-        export_key='authors',
-        validators=[validators.required(), list_length(
-            min_num=1, element_filter=filter_empty_helper(),
-        )],
-    )
+#    creators = fields.DynamicFieldList(
+#        fields.FormField(
+#            CreatorForm,
+#            widget=ExtendedListWidget(
+#                item_widget=ItemWidget(),
+#                html_tag='div'
+#            ),
+#        ),
+#        label='Authors',
+#        add_label='Add another author',
+#        icon='fa fa-user fa-fw',
+#        widget_classes='',
+#        min_entries=1,
+#        export_key='authors',
+#        validators=[validators.required(), list_length(
+#            min_num=1, element_filter=filter_empty_helper(),
+#        )],
+#    )
     description = fields.TextAreaField(
         label="Description",
         description='Required.',
         default='',
         icon='fa fa-pencil fa-fw',
-        validators=[validators.required(), ],
+        #validators=[validators.required(), ],
         widget=CKEditorWidget(
             toolbar=[
                 ['PasteText', 'PasteFromWord'],
@@ -464,76 +465,76 @@ class ZenodoForm(WebDepositForm):
             strip_string,
         ],
     )
-    keywords = fields.DynamicFieldList(
-        fields.StringField(
-            widget_classes='form-control',
-            widget=ColumnInput(class_="col-xs-10"),
-        ),
-        label='Keywords',
-        add_label='Add another keyword',
-        icon='fa fa-tags fa-fw',
-        widget_classes='',
-        min_entries=1,
-    )
-    notes = fields.TextAreaField(
-        label="Additional notes",
-        description='Optional.',
-        default='',
-        validators=[validators.optional()],
-        filters=[
-            strip_string,
-        ],
-        widget_classes='form-control',
-        icon='fa fa-pencil fa-fw',
-    )
+#    keywords = fields.DynamicFieldList(
+#        fields.TextField(
+#            widget_classes='form-control',
+#            widget=ColumnInput(class_="col-xs-10"),
+#        ),
+#        label='Keywords',
+#        add_label='Add another keyword',
+#        icon='fa fa-tags fa-fw',
+#        widget_classes='',
+#        min_entries=1,
+#    )
+#    notes = fields.TextAreaField(
+#        label="Additional notes",
+#        description='Optional.',
+#        default='',
+#        validators=[validators.optional()],
+#        filters=[
+#            strip_string,
+#        ],
+#        widget_classes='form-control',
+#        icon='fa fa-pencil fa-fw',
+#    )
 
     #
     # Access rights
     #
-    access_right = zfields.AccessRightField(
-        label="Access right",
-        description="Required. Open access uploads have considerably higher "
-        "visibility on %s." % CFG_SITE_NAME,
-        default="open",
-        validators=[validators.required()]
-    )
-    embargo_date = fields.Date(
-        label=_('Embargo date'),
-        icon='fa fa-calendar fa-fw',
-        description='Required only for Embargoed Access uploads. Format: '
-        'YYYY-MM-DD. The date your upload will be made publicly available '
-        'in case it is under an embargo period from your publisher.',
-        default=date.today(),
-        validators=[
-            required_if('access_right', ['embargoed']),
-            validators.optional()
-        ],
-        widget=date_widget,
-        widget_classes='input-small',
-        hidden=True,
-        disabled=True,
-    )
-    license = zfields.LicenseField(
-        validators=[
-            required_if('access_right', ['embargoed', 'open', ]),
-            validators.required()
-        ],
-        default='cc-zero',
-        domain_data=True,
-        domain_content=True,
-        domain_software=True,
-        description='Required. The selected license applies to all of your '
-        'files displayed in the bottom of the form. If you want to upload '
-        'some files under a different license, please do so in two separate'
-        ' uploads. If you think a license missing is in the list, please '
-        'inform us at %s.' % CFG_SITE_SUPPORT_EMAIL,
-        filters=[
-            strip_string,
-        ],
-        placeholder="Start typing a license name or abbreviation...",
-        icon='fa fa-certificate fa-fw',
-    )
-
+#    access_right = zfields.AccessRightField(
+#        label="Access right",
+#        description="Required. Open access uploads have considerably higher "
+#        "visibility on %s." % CFG_SITE_NAME,
+#        default="open",
+#        validators=[validators.required()]
+#    )
+#    embargo_date = fields.Date(
+#        label=_('Embargo date'),
+#        icon='fa fa-calendar fa-fw',
+#        description='Required only for Embargoed Access uploads. Format: '
+#        'YYYY-MM-DD. The date your upload will be made publicly available '
+#        'in case it is under an embargo period from your publisher.',
+#        default=date.today(),
+#        validators=[
+#            required_if('access_right', ['embargoed']),
+#            validators.optional()
+#        ],
+#        widget=date_widget,
+#        widget_classes='input-small',
+#        hidden=True,
+#        disabled=True,
+#    )
+#    license = zfields.LicenseField(
+#        validators=[
+#            required_if('access_right', ['embargoed', 'open', ]),
+#            validators.required()
+#        ],
+#        default='cc-zero',
+#        domain_data=True,
+#        domain_content=True,
+#        domain_software=True,
+#        description='Required. The selected license applies to all of your '
+#        'files displayed in the bottom of the form. If you want to upload '
+#        'some files under a different license, please do so in two separate'
+#        ' uploads. If you think a license missing is in the list, please '
+#        'inform us at %s.' % CFG_SITE_SUPPORT_EMAIL,
+#        filters=[
+#            strip_string,
+#        ],
+#        placeholder="Start typing a license name or abbreviation...",
+#        icon='fa fa-certificate fa-fw',
+#    )
+#
     #
     # Collection
     #
@@ -542,227 +543,231 @@ class ZenodoForm(WebDepositForm):
             CommunityForm,
             widget=ExtendedListWidget(html_tag=None, item_widget=ItemWidget())
         ),
-        validators=[community_validator],
+        validators=[
+            community_validator,
+            validators.required()
+        ],
         widget=TagListWidget(template="{{title}}"),
         widget_classes=' dynamic-field-list',
-        icon='fa fa-group fa-fw',
+        icon='fa fa-globe fa-fw',
+        label='Country',
         export_key='provisional_communities',
     )
-
-    #
-    # Funding
-    #
-    grants = fields.DynamicFieldList(
-        fields.FormField(
-            GrantForm,
-            widget=ExtendedListWidget(html_tag=None, item_widget=ItemWidget()),
-            export_key=lambda f: {
-                'identifier': f.data['id'],
-                'title': "%s - %s (%s)" % (
-                    f.data['acronym'], f.data['title'], f.data['id']
-                )
-            }
-        ),
-        widget=TagListWidget(template="{{acronym}} - {{title}} ({{id}})"),
-        widget_classes=' dynamic-field-list',
-        icon='fa fa-money fa-fw',
-        description="Optional. Note, a human %s curator will validate your"
-                    " upload before reporting it to OpenAIRE, and you may "
-                    "thus experience a delay before your upload is available "
-                    "in OpenAIRE." % CFG_SITE_NAME,
-        validators=[grants_validator],
-    )
-
-    #
-    # Related work
-    #
-    related_identifiers = fields.DynamicFieldList(
-        fields.FormField(
-            RelatedIdentifierForm,
-            description="Optional. Format: e.g. 10.1234/foo.bar",
-            widget=ExtendedListWidget(
-                item_widget=ItemWidget(),
-                html_tag='div'
-            ),
-        ),
-        label="Related identifiers",
-        add_label='Add another related identifier',
-        icon='fa fa-barcode fa-fw',
-        widget_classes='',
-        min_entries=1,
-    )
-
-    #
-    # Journal
-    #
-    journal_title = fields.StringField(
-        label="Journal title",
-        description="Optional.",
-        validators=[
-            required_if(
-                'journal_volume', [lambda x: bool(x.strip()), ],  # non-empty
-                message="Journal title is required if you specify either "
-                        "volume, issue or pages."
-            ),
-            required_if(
-                'journal_issue', [lambda x: bool(x.strip()), ],  # non-empty
-                message="Journal title is required if you specify either "
-                        "volume, issue or pages."
-            ),
-            required_if(
-                'journal_pages', [lambda x: bool(x.strip()), ],  # non-empty
-                message="Journal title is required if you specify either "
-                        "volume, issue or pages."
-            ),
-        ],
-        export_key='journal.title',
-    )
-    journal_volume = fields.StringField(
-        label="Volume", description="Optional.", export_key='journal.volume',
-    )
-    journal_issue = fields.StringField(
-        label="Issue", description="Optional.", export_key='journal.issue',
-    )
-    journal_pages = fields.StringField(
-        label="Pages", description="Optional.", export_key='journal.pages',
-    )
-
-    #
-    # Book/report/chapter
-    #
-    partof_title = fields.StringField(
-        label="Book title",
-        description="Optional. "
-                    "Title of the book or report which this "
-                    "upload is part of.",
-        export_key='part_of.title',
-    )
-    partof_pages = fields.StringField(
-        label="Pages",
-        description="Optional.",
-        export_key='part_of.pages',
-    )
-
-    imprint_isbn = fields.StringField(
-        label="ISBN",
-        description="Optional.",
-        placeholder="e.g 0-06-251587-X",
-        export_key='isbn',
-    )
-    imprint_publisher = fields.StringField(
-        label="Publisher",
-        description="Optional.",
-        export_key='imprint.publisher',
-    )
-    imprint_place = fields.StringField(
-        label="Place",
-        description="Optional.",
-        placeholder="e.g city, country...",
-        export_key='imprint.place',
-    )
-
-    #
-    # Thesis
-    #
-    thesis_supervisors = fields.DynamicFieldList(
-        fields.FormField(
-            CreatorForm,
-            widget=ExtendedListWidget(
-                item_widget=ItemWidget(),
-                html_tag='div'
-            ),
-        ),
-        label='Supervisors',
-        add_label='Add another supervisor',
-        icon='fa fa-user fa-fw',
-        widget_classes='',
-        min_entries=1,
-    )
-    thesis_university = fields.StringField(
-        description="Optional.",
-        label='Awarding University',
-        validators=[validators.optional()],
-        icon='fa fa-building fa-fw',
-    )
-
-    #
-    # Conference
-    #
-    conference_title = fields.StringField(
-        label="Conference title",
-        description="Optional.",
-        validators=[
-            not_required_if('conference_acronym', [lambda x: bool(x.strip())]),
-            required_if(
-                'conference_dates', [lambda x: bool(x.strip()), ],  # non-empty
-                message="Conference title or acronym is required if you "
-                        "specify either dates or place."
-            ),
-            required_if(
-                'conference_place', [lambda x: bool(x.strip()), ],  # non-empty
-                message="Conference title or acronym is required if you "
-                        "specify either dates or place."
-            ),
-        ],
-        export_key="meetings.title"
-    )
-    conference_acronym = fields.StringField(
-        label="Acronym",
-        description="Optional.",
-        validators=[
-            not_required_if('conference_title', [lambda x: bool(x.strip())]),
-            required_if(
-                'conference_dates', [lambda x: bool(x.strip()), ],  # non-empty
-                message="Conference title or acronym is required if you "
-                        "specify either dates or place."
-            ),
-            required_if(
-                'conference_place', [lambda x: bool(x.strip()), ],  # non-empty
-                message="Conference title or acronym is required if you "
-                        "specify either dates or place."
-            ),
-        ],
-        export_key="meetings.acronym",
-    )
-    conference_dates = fields.StringField(
-        label="Dates", description="Optional.",
-        placeholder="e.g 21-22 November 2012...",
-        export_key="meetings.dates",
-    )
-    conference_place = fields.StringField(
-        label="Place",
-        description="Optional.",
-        placeholder="e.g city, country...",
-        export_key="meetings.place",
-    )
-    conference_url = fields.StringField(
-        label="Website",
-        description="Optional. E.g. http://zenodo.org",
-        validators=[validators.optional(), validators.URL()]
-    )
-    conference_session = fields.StringField(
-        label="Session",
-        description="Optional. Number of session within the conference.",
-        placeholder="e.g VI",
-        export_key="meetings.session",
-    )
-    conference_session_part = fields.StringField(
-        label="Part",
-        description="Optional. Number of part within a session.",
-        placeholder="e.g 1",
-        export_key="meetings.session_part",
-    )
-
-    #
-    # References
-    #
-    references = zfields.TextAreaListField(
-        label="References",
-        description="Optional. Format: One reference per line.",
-        validators=[validators.optional(), ],
-        icon='fa fa-bookmark',
-        placeholder="One reference per line...",
-    )
+#
+#    #
+#    # Funding
+#    #
+#    grants = fields.DynamicFieldList(
+#        fields.FormField(
+#            GrantForm,
+#            widget=ExtendedListWidget(html_tag=None, item_widget=ItemWidget()),
+#            export_key=lambda f: {
+#                'identifier': f.data['id'],
+#                'title': "%s - %s (%s)" % (
+#                    f.data['acronym'], f.data['title'], f.data['id']
+#                )
+#            }
+#        ),
+#        widget=TagListWidget(template="{{acronym}} - {{title}} ({{id}})"),
+#        widget_classes=' dynamic-field-list',
+#        icon='fa fa-money fa-fw',
+#        description="Optional. Note, a human %s curator will validate your"
+#                    " upload before reporting it to OpenAIRE, and you may "
+#                    "thus experience a delay before your upload is available "
+#                    "in OpenAIRE." % CFG_SITE_NAME,
+#        validators=[grants_validator],
+#    )
+#
+#    #
+#    # Related work
+#    #
+#    related_identifiers = fields.DynamicFieldList(
+#        fields.FormField(
+#            RelatedIdentifierForm,
+#            description="Optional. Format: e.g. 10.1234/foo.bar",
+#            widget=ExtendedListWidget(
+#                item_widget=ItemWidget(),
+#                html_tag='div'
+#            ),
+#        ),
+#        label="Related identifiers",
+#        add_label='Add another related identifier',
+#        icon='fa fa-barcode fa-fw',
+#        widget_classes='',
+#        min_entries=1,
+#    )
+#
+#    #
+#    # Journal
+#    #
+#    journal_title = fields.TextField(
+#        label="Journal title",
+#        description="Optional.",
+#        validators=[
+#            required_if(
+#                'journal_volume', [lambda x: bool(x.strip()), ],  # non-empty
+#                message="Journal title is required if you specify either "
+#                        "volume, issue or pages."
+#            ),
+#            required_if(
+#                'journal_issue', [lambda x: bool(x.strip()), ],  # non-empty
+#                message="Journal title is required if you specify either "
+#                        "volume, issue or pages."
+#            ),
+#            required_if(
+#                'journal_pages', [lambda x: bool(x.strip()), ],  # non-empty
+#                message="Journal title is required if you specify either "
+#                        "volume, issue or pages."
+#            ),
+#        ],
+#        export_key='journal.title',
+#    )
+#    journal_volume = fields.TextField(
+#        label="Volume", description="Optional.", export_key='journal.volume',
+#    )
+#    journal_issue = fields.TextField(
+#        label="Issue", description="Optional.", export_key='journal.issue',
+#    )
+#    journal_pages = fields.TextField(
+#        label="Pages", description="Optional.", export_key='journal.pages',
+#    )
+#
+#    #
+#    # Book/report/chapter
+#    #
+#    partof_title = fields.TextField(
+#        label="Book title",
+#        description="Optional. "
+#                    "Title of the book or report which this "
+#                    "upload is part of.",
+#        export_key='part_of.title',
+#    )
+#    partof_pages = fields.TextField(
+#        label="Pages",
+#        description="Optional.",
+#        export_key='part_of.pages',
+#    )
+#
+#    imprint_isbn = fields.TextField(
+#        label="ISBN",
+#        description="Optional.",
+#        placeholder="e.g 0-06-251587-X",
+#        export_key='isbn',
+#    )
+#    imprint_publisher = fields.TextField(
+#        label="Publisher",
+#        description="Optional.",
+#        export_key='imprint.publisher',
+#    )
+#    imprint_place = fields.TextField(
+#        label="Place",
+#        description="Optional.",
+#        placeholder="e.g city, country...",
+#        export_key='imprint.place',
+#    )
+#
+#    #
+#    # Thesis
+#    #
+#    thesis_supervisors = fields.DynamicFieldList(
+#        fields.FormField(
+#            CreatorForm,
+#            widget=ExtendedListWidget(
+#                item_widget=ItemWidget(),
+#                html_tag='div'
+#            ),
+#        ),
+#        label='Supervisors',
+#        add_label='Add another supervisor',
+#        icon='fa fa-user fa-fw',
+#        widget_classes='',
+#        min_entries=1,
+#    )
+#    thesis_university = fields.TextField(
+#        description="Optional.",
+#        label='Awarding University',
+#        validators=[validators.optional()],
+#        icon='fa fa-building fa-fw',
+#    )
+#
+#    #
+#    # Conference
+#    #
+#    conference_title = fields.TextField(
+#        label="Conference title",
+#        description="Optional.",
+#        validators=[
+#            not_required_if('conference_acronym', [lambda x: bool(x.strip())]),
+#            required_if(
+#                'conference_dates', [lambda x: bool(x.strip()), ],  # non-empty
+#                message="Conference title or acronym is required if you "
+#                        "specify either dates or place."
+#            ),
+#            required_if(
+#                'conference_place', [lambda x: bool(x.strip()), ],  # non-empty
+#                message="Conference title or acronym is required if you "
+#                        "specify either dates or place."
+#            ),
+#        ],
+#        export_key="meetings.title"
+#    )
+#    conference_acronym = fields.TextField(
+#        label="Acronym",
+#        description="Optional.",
+#        validators=[
+#            not_required_if('conference_title', [lambda x: bool(x.strip())]),
+#            required_if(
+#                'conference_dates', [lambda x: bool(x.strip()), ],  # non-empty
+#                message="Conference title or acronym is required if you "
+#                        "specify either dates or place."
+#            ),
+#            required_if(
+#                'conference_place', [lambda x: bool(x.strip()), ],  # non-empty
+#                message="Conference title or acronym is required if you "
+#                        "specify either dates or place."
+#            ),
+#        ],
+#        export_key="meetings.acronym",
+#    )
+#    conference_dates = fields.TextField(
+#        label="Dates", description="Optional.",
+#        placeholder="e.g 21-22 November 2012...",
+#        export_key="meetings.dates",
+#    )
+#    conference_place = fields.TextField(
+#        label="Place",
+#        description="Optional.",
+#        placeholder="e.g city, country...",
+#        export_key="meetings.place",
+#    )
+#    conference_url = fields.TextField(
+#        label="Website",
+#        description="Optional. E.g. http://zenodo.org",
+#        validators=[validators.optional(), validators.URL()]
+#    )
+#    conference_session = fields.TextField(
+#        label="Session",
+#        description="Optional. Number of session within the conference.",
+#        placeholder="e.g VI",
+#        export_key="meetings.session",
+#    )
+#    conference_session_part = fields.TextField(
+#        label="Part",
+#        description="Optional. Number of part within a session.",
+#        placeholder="e.g 1",
+#        export_key="meetings.session_part",
+#    )
+#
+#    #
+#    # References
+#    #
+#    references = zfields.TextAreaListField(
+#        label="References",
+#        description="Optional. Format: One reference per line.",
+#        validators=[validators.optional(), ],
+#        icon='fa fa-bookmark',
+#        placeholder="One reference per line...",
+#    )
 
     #
     # File upload field
@@ -794,68 +799,70 @@ class ZenodoForm(WebDepositForm):
             ['upload_type', 'publication_type', 'image_type', ],
             {'indication': 'required'}),
         ('Basic information', [
-            'doi', 'prereserve_doi', 'publication_date', 'country', 'title',  'creators', 'description',
+            'communities', 'title', 'description',
             'keywords', 'notes',
         ], {'indication': 'required', }),
-        ('License', [
-            'access_right', 'embargo_date', 'license',
-        ], {
-            'indication': 'required',
-            #'description': 'Unless you explicitly specify the license conditions below for Open Access and Embargoed Access uploads,'
-            #' you agree to release your data files under the terms of the Creative Commons Zero (CC0) waiver.'
-            #' All authors of the data and publications have agreed to the terms of this waiver and license.'
-        }),
-        ('Communities', [
-            'communities',
-        ], {
-            'indication': 'recommended',
-            'description': Markup('Any user can create a community collection on %(CFG_SITE_NAME)s (<a href="/communities/">browse communities</a>). Specify communities which you wish your upload to appear in. The owner of the community will be notified, and can either accept or reject your request.' % {'CFG_SITE_NAME': CFG_SITE_NAME})
-        }),
-        ('Funding', [
-            'grants',
-        ], {
-            'indication': 'recommended',
-            'description': '%s is integrated into reporting lines for research funded by the European Commission via OpenAIRE (http://www.openaire.eu). Specify grants which have funded your research, and we will let your funding agency know!' % CFG_SITE_NAME,
-        }),
-        ('Related/alternate identifiers', [
-            'related_identifiers',
-        ], {
-            'classes': '',
-            'indication': 'recommended',
-            'description': 'Specify identifiers of related publications and datasets. Supported identifiers include: DOI, Handle, ARK, PURL, ISSN, ISBN, PubMed ID, PubMed Central ID, ADS Bibliographic Code, arXiv, Life Science Identifiers (LSID), EAN-13, ISTC, URNs and URLs.'
-        }),
-        ('References', [
-            'references',
-        ], {
-            'classes': '',
-            'indication': 'optional',
-        }),
-        ('Journal', [
-            'journal_title', 'journal_volume', 'journal_issue',
-            'journal_pages',
-        ], {
-            'classes': '',
-            'indication': 'optional',
-        }),
-        ('Conference', [
-            'conference_title', 'conference_acronym', 'conference_dates',
-            'conference_place', 'conference_url', '-', 'conference_session',
-            'conference_session_part'
-        ], {
-            'classes': '',
-            'indication': 'optional',
-        }),
-        ('Book/Report/Chapter', [
-            'imprint_publisher',  'imprint_place', 'imprint_isbn', '-',
-            'partof_title', 'partof_pages',
-        ], {'classes': '', 'indication': 'optional', }),
-        ('Thesis', [
-            'thesis_university', 'thesis_supervisors',
-        ], {
-            'classes': '',
-            'indication': 'optional',
-        }),
     ]
+#        ('License', [
+#            'access_right', 'embargo_date', 'license',
+#        ], {
+#            'indication': 'required',
+#            #'description': 'Unless you explicitly specify the license conditions below for Open Access and Embargoed Access uploads,'
+#            #' you agree to release your data files under the terms of the Creative Commons Zero (CC0) waiver.'
+#            #' All authors of the data and publications have agreed to the terms of this waiver and license.'
+#        }),
+#        ('Country', [
+#            'communities',
+#        ], {
+#            'indication': 'recommended',
+#            'description': Markup('Any user can create a community collection on %(CFG_SITE_NAME)s (<a href="/communities/">browse countries</a>). Specify communities which you wish your upload to appear in. The owner of the community will be notified, and can either accept or reject your request.' % {'CFG_SITE_NAME': CFG_SITE_NAME})
+#        })
+#        ]
+#        ('Funding', [
+#            'grants',
+#        ], {
+#            'indication': 'recommended',
+#            'description': '%s is integrated into reporting lines for research funded by the European Commission via OpenAIRE (http://www.openaire.eu). Specify grants which have funded your research, and we will let your funding agency know!' % CFG_SITE_NAME,
+#        }),
+#        ('Related datasets/publications', [
+#            'related_identifiers',
+#        ], {
+#            'classes': '',
+#            'indication': 'recommended',
+#            'description': 'Specify identifiers of related publications and datasets. Supported identifiers include: DOI, Handle, ARK, PURL, ISSN, ISBN, PubMed ID, PubMed Central ID, ADS Bibliographic Code, arXiv, Life Science Identifiers (LSID), EAN-13, ISTC, URNs and URLs.'
+#        }),
+#        ('References', [
+#            'references',
+#        ], {
+#            'classes': '',
+#            'indication': 'optional',
+#        }),
+#        ('Journal', [
+#            'journal_title', 'journal_volume', 'journal_issue',
+#            'journal_pages',
+#        ], {
+#            'classes': '',
+#            'indication': 'optional',
+#        }),
+#        ('Conference', [
+#            'conference_title', 'conference_acronym', 'conference_dates',
+#            'conference_place', 'conference_url', '-', 'conference_session',
+#            'conference_session_part'
+#        ], {
+#            'classes': '',
+#            'indication': 'optional',
+#        }),
+#        ('Book/Report/Chapter', [
+#            'imprint_publisher',  'imprint_place', 'imprint_isbn', '-',
+#            'partof_title', 'partof_pages',
+#        ], {'classes': '', 'indication': 'optional', }),
+#        ('Thesis', [
+#            'thesis_university', 'thesis_supervisors',
+#        ], {
+#            'classes': '',
+#            'indication': 'optional',
+#        }),
+#    ]
 
 
 def filter_fields(groups):

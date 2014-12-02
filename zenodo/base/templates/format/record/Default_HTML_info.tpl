@@ -15,7 +15,6 @@
 <div class="well metadata">
   <dl>
     {{ bfe_date(bfo, date_format='%d %B %Y', prefix='<dt>Publication date:</dt><dd>', suffix='</dd>') }}
-    {{ bfe_openaire_access_rights(bfo, only_restrictions="yes") }}
     {% if record.doi %}
     <dt>DOI</dt>
     <dd>{% if record.doi|is_local_doi %}{{doi_badge(record.doi)}}{% else %}{{ record.doi|doi_link }}{% endif %}</dd>

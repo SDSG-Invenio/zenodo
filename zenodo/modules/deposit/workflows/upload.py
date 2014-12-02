@@ -22,7 +22,7 @@
 
 from __future__ import absolute_import
 
-import json
+#import json
 from datetime import date
 
 from flask import render_template, url_for, request
@@ -33,7 +33,7 @@ from workflow import patterns as p
 
 from invenio.config import CFG_DATACITE_DOI_PREFIX
 from invenio.modules.formatter import format_record
-from invenio.modules.knowledge.api import get_kb_mapping
+#from invenio.modules.knowledge.api import get_kb_mapping
 from invenio.ext.login import UserInfo
 from invenio.modules.deposit.models import DepositionType, Deposition, \
     InvalidApiAction
@@ -70,26 +70,26 @@ CFG_ECFUNDED_USER_COLLECTION_ID = "ecfunded"
 # =======
 # Helpers
 # =======
-def file_firerole(email, access_right, embargo_date):
+def file_firerole(email, access_right):
     """
     Compute file firerole for a file given access_right, embargo_date.
     """
     # Generate firerole
     fft_status = []
-    if access_right == 'open':
-        # Access to everyone
-        fft_status = [
-            'allow any',
-        ]
-    elif access_right == 'embargoed':
-        # Access to submitter, deny everyone else until embargo date,
-        # then allow all
-        fft_status = [
-            'allow email "%s"' % email,
-            'deny until "%s"' % embargo_date,
-            'allow any',
-        ]
-    elif access_right in ('closed', 'restricted',):
+#    if access_right == 'open':
+#        # Access to everyone
+#        fft_status = [
+#            'allow any',
+#        ]
+#    elif access_right == 'embargoed':
+#        # Access to submitter, deny everyone else until embargo date,
+#        # then allow all
+#        fft_status = [
+#            'allow email "%s"' % email,
+#            'deny until "%s"' % embargo_date,
+#            'allow any',
+#        ]
+    if access_right in ('closed', 'restricted',):
         # Access to submitter, deny everyone else
         fft_status = [
             'allow email "%s"' % email,
@@ -165,40 +165,39 @@ def process_recjson(deposition, recjson):
         # Happens on re-run
         pass
 
-    # =============================
-    # Related/alternate identifiers
-    # =============================
-    if recjson.get('related_identifiers', []):
-        related_identifiers = recjson.get('related_identifiers', [])
-
-        recjson['related_identifiers'] = filter(
-            lambda x: x.get('relation', '') != 'isAlternativeIdentifier',
-            related_identifiers
-        )
-
-        recjson['alternate_identifiers'] = map(
-            lambda x: {'scheme': x['scheme'], 'identifier': x['identifier']},
-            filter(
-                lambda x: x.get('relation', '') == 'isAlternativeIdentifier',
-                related_identifiers
-            )
-        )
-
-    # =================
-    # License
-    # =================
-    if recjson['access_right'] in ["open", "embargoed"]:
-        info = get_kb_mapping(CFG_LICENSE_KB, str(recjson['license']))
-        if info:
-            info = json.loads(info['value'])
-            recjson['license'] = dict(
-                identifier=recjson['license'],
-                source=CFG_LICENSE_SOURCE,
-                license=info['title'],
-                url=info['url'],
-            )
-    elif 'license' in recjson:
-        del recjson['license']
+#    # =============================
+#    # Related/alternate identifiers
+#    # =============================
+#    if recjson.get('related_identifiers', []):
+#        related_identifiers = recjson.get('related_identifiers', [])
+#
+#        recjson['related_identifiers'] = filter(
+#            lambda x: x.get('relation', '') != 'isAlternativeIdentifier',
+#            related_identifiers
+#        )
+#
+#        recjson['alternate_identifiers'] = map(
+#            lambda x: {'scheme': x['scheme'], 'identifier': x['identifier']},
+#            filter(
+#                lambda x: x.get('relation', '') == 'isAlternativeIdentifier',
+#                related_identifiers
+#            )
+#        )
+#    # =================
+#    # License
+#    # =================
+#    if recjson['access_right'] in ["open", "embargoed"]:
+#        info = get_kb_mapping(CFG_LICENSE_KB, str(recjson['license']))
+#        if info:
+#            info = json.loads(info['value'])
+#            recjson['license'] = dict(
+#                identifier=recjson['license'],
+#                source=CFG_LICENSE_SOURCE,
+#                license=info['title'],
+#                url=info['url'],
+#            )
+#    elif 'license' in recjson:
+#        del recjson['license']
 
     # =======================
     # Journal
@@ -325,8 +324,7 @@ def process_recjson_new(deposition, recjson):
     # Files (sorting + restrictions)
     # ==============================
     fft_status = file_firerole(
-        email, recjson['access_right'], recjson.get('embargo_date', None)
-    )
+        email, 'restricted')
 
     # Calculate number of leading zeros needed in the comment.
     file_commment_fmt = "%%0%dd" % len(str(len(recjson['fft'])))

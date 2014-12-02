@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 ## This file is part of Zenodo.
-## Copyright (C) 2012, 2013 CERN.
+## Copyright (C) 2012, 2013, 2014 CERN.
 ##
 ## Zenodo is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -26,16 +26,6 @@ from invenio.modules.deposit.field_widgets import InlineListWidget,\
     BigIconRadioInput
 
 __all__ = ['UploadTypeField']
-
-UPLOAD_TYPES = [
-    ('publication', 'Publication', [], 'fa fa-file-text-o fa-2x fa-fw'),
-    ('poster', 'Poster', [], 'fa fa-columns fa-2x fa-fw'),
-    ('presentation', 'Presentation', [], 'fa fa-group fa-2x fa-fw'),
-    ('dataset', 'Dataset', [], 'fa fa-table fa-2x fa-fw'),
-    ('image', 'Image', [], 'fa fa-bar-chart-o fa-2x fa-fw'),
-    ('video', 'Video/Audio', [], 'fa fa-film fa-2x fa-fw'),
-    ('software', 'Software', [], 'fa fa-cogs fa-2x fa-fw'),
-]
 
 UPLOAD_TYPES = [
     ('single', 'Single record', [], 'fa fa-file-text-o fa-2x fa-fw'),
@@ -84,7 +74,7 @@ class UploadTypeField(WebDepositField, RadioField):
         kwargs['choices'] = [(x[0], x[1]) for x in UPLOAD_TYPES]
         kwargs['processors'] = [
             subtype_processor,
-            set_license_processor,
+            # set_license_processor,
         ]
 
         super(UploadTypeField, self).__init__(**kwargs)

@@ -8,7 +8,6 @@
         {{ curation_buttons(bfo, ucoll_id) }}
         <span class="label label-info" data-toggle="tooltip" title="Publication date">{{ bfe_date(bfo, date_format='%d %B %Y') }}</span>
         {{ bfe_openaire_pubtype(bfo, as_label="1") }}
-        {{ bfe_openaire_access_rights(bfo, as_label="1") }}
         <br/>
         <h4 class="media-heading muted_a"><a href="{{ bfe_record_url(bfo, ) }}">{{ bfe_title_brief(bfo, highlight="no") }}</a></h4>
         <p>{{ bfe_authors(bfo, limit="4", extension="; et al. ", highlight="no") }}</p>

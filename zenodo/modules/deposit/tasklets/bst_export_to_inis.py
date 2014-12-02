@@ -24,14 +24,61 @@ Export records to be consumed by INIS
 """
 
 import os
-from datetime import datetime
-from invenio.config import CFG_TMPDIR
+from datetime import datetime, date
+from tempfile import mkstemp
+from shutil import copy2
+from invenio.config import CFG_TMPDIR, CFG_SITE_URL
 from invenio.legacy.dbquery import run_sql
-from invenio.legacy.search_engine import perform_request_search
+from invenio.legacy.search_engine import perform_request_search, get_fieldvalues
 from invenio.legacy.bibdocfile.api import BibRecDocs
 from invenio.legacy.bibsched.bibtask import write_message, \
-    task_sleep_now_if_required, task_update_progress
-from invenio.legacy.bibsword.client import get_marcxml_from_record
+    task_sleep_now_if_required, task_update_progress, task_low_level_submission
+from invenio.modules.messages.query import create_message, send_message
+
+
+def generate_msg(recid):
+    msg = """A batch (record %(recid)s) that you uploaded has not passed the verification process. \n
+            Please check your uploads page.\n\n
+            %(site_url)s/record/%(recid)s""" % {'recid': str(recid), 'site_url': CFG_SITE_URL}
+    subject = "Failed submission (record %(recid)s)" % {'recid': str(recid)}
+    return (subject, msg)
+
+
+def create_marcxml_header():
+    """
+    Creates the MARC xml header
+    @return: the marcxml header
+    @rtype: string
+    """
+
+    marcxml_output = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    marcxml_output += '<collection xmlns="http://www.loc.gov/MARC21/slim">'
+    return marcxml_output
+
+
+def create_marcxml_footer(marcxml_output):
+    """
+    Creates the MARC xml footer.
+    @param marcxml_output: the final marcxml output
+    @type param: string
+    @return: the final marcxml output plus marcxml footer
+    @rtype: string
+    """
+
+    marcxml_output += '\n</collection>\n'
+    return marcxml_output
+
+
+def create_marxml_validation_tag(recid, valid):
+    record_spam_xml = """
+                      <record>
+                        <controlfield tag="001">%(recid)s</controlfield>
+                        <datafield tag="911" ind1=" " ind2=" ">
+                          <subfield code="a">%(valid)s</subfield>
+                        </datafield>
+                      </record>
+                      """ % {'recid': str(recid), 'valid': str(bool(valid))}
+    return record_spam_xml
 
 
 def find_all(a_str, sub):
@@ -54,7 +101,7 @@ def get_TRNs(recid):
                 f = open(bibdocfile.get_path(), 'r')
                 ttf = f.read()
                 f.close()
-                TRNs += [ttf[i+4:i+13] for i in list(find_all(ttf, '001^'))]
+                TRNs += [ttf[i + 4:i + 13] for i in list(find_all(ttf, '001^'))]
     return TRNs
 
 
@@ -126,7 +173,7 @@ def get_records_to_check(recids, colls, last_checking_date):
                 try:
                     recid_min = rec_range[0]
                     recid_max = rec_range[1]
-                    for rec in perform_request_search(p="recid:"+recid_min+"->"+recid_max):
+                    for rec in perform_request_search(p="recid:" + recid_min + "->" + recid_max):
                         recid_list.append(rec)
                 except:
                     write_message("Error while trying to parse the recids argument.")
@@ -146,8 +193,8 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
     """
     Export records in redis to the especified directory.
 
-    @param recid: the record IDs to consider
-    @type recid: list
+    @param recids: the record IDs to consider
+    @type recids: list
     @param directory: absolute path to the local directory.
     @type docnames: string
     @param force: do we force the creation even if the exported record already exists (1) or not (0)?
@@ -159,10 +206,16 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
     elif directory[-1] != '/':
         directory = directory + '/'
 
+    directory += 'W' + str(date.today().year)[2:] + str(date.today().isocalendar()[1]) + '/'
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     recids_to_check = get_records_to_check(recids, colls, get_last_export_date())
+    store_last_export_date()
 
     i = 0
-    out = ''
+    marcxml_output = create_marcxml_header()
 
     for recid in recids_to_check:
         if all_file_names_in_TRNs(recid):
@@ -175,7 +228,7 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
             write_message("Going to export record #%s" % recid)
 
             task_sleep_now_if_required()
-            msg = "Processing %s (%i/%i)" % (recid, i, len(recids))
+            msg = "Processing recid  %s (%i/%i)" % (str(recid), i, len(recids_to_check))
             write_message(msg)
             task_update_progress(msg)
 
@@ -186,26 +239,41 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
                     write_message("Could not process docname %s: %s" % (docname, e))
                     continue
 
-#            get_description_and_comment(bibarchive.get_bibdoc(docname).list_latest_files())
-#
-#            # List all files that are not icons or subformats
+                # List all files that are not icons or subformats
                 current_files = [bibdocfile.get_path() for bibdocfile in bibdoc.list_latest_files() if
                                  not bibdocfile.get_subformat() and not bibdocfile.is_icon()]
 
-                ## current_files = []
-                ## if not force:
-                ##     current_files = [bibdocfile.get_path() for bibdocfile bibdoc.list_latest_files()]
                 for current_filepath in current_files:
-                    out += current_filepath + '\n'
+                    if bibdocfile.format == '.ttf':
+                        filename = "INIS.CC."+str(recid)+".inp"
+                    else:
+                        filename = docname + bibdocfile.format
+                    copy2(current_filepath, directory + filename)
+
+            marcxml_output += create_marxml_validation_tag(recid, True)
+
+    #        f = open(str(recid) + '.xml', 'w')
+    #        f.write(get_marcxml_from_record(recid))
+    #        f.close()
 
         else:
-            write_message("pdfs and TRN don't match in " + str(recid))
+            write_message("pdfs and TRN don't match in recid: " + str(recid))
+            (subject, body) = generate_msg(recid)
+            message_id = create_message(uid_from=1, users_to_str=get_fieldvalues(recid, "8560_y"), msg_subject=subject, msg_body=body)
+            send_message(get_fieldvalues(recid, "8560_w"), message_id)
+            marcxml_output += create_marxml_validation_tag(recid, False)
 
-        f = open(directory + str(recid) + '.xml', 'w')
-        f.write(out + get_marcxml_from_record(recid))
-        f.close()
+    if len(recids_to_check) > 0:
+        marcxml_output = create_marcxml_footer(marcxml_output)
+        current_date = datetime.now()
+        file_path_fd, file_path_name = mkstemp(suffix='.xml',
+                                               prefix="records_with_validation_tag_%s" %
+                                               current_date.strftime("%Y-%m-%d_%H:%M:%S"),
+                                               dir=CFG_TMPDIR)
+        os.write(file_path_fd, marcxml_output)
+        os.close(file_path_fd)
+        task_low_level_submission('bibupload', 'deposit', '-a', file_path_name)
 
-    store_last_export_date()
     write_message("All records successfully exported")
 
     return 1

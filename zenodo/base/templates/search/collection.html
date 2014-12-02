@@ -26,27 +26,15 @@
   <div class="col-md-4">
       {{ portalbox_sidebar(portalboxes.rt, class="well") }}
       {%- if not collection.name.startswith("user-") and not collection.name.startswith("provisional-") %}
-      <div class="well">
-        <span class="pull-right"><i class="fa fa-github fa-5x"></i></span>
-        <h4>Using GitHub?</h4>
-        {% if current_user.is_authenticated %}
-        <a href="{{url_for('zenodo_github.index')}}">Check out</a> our GitHub integration. Software Preservation Made Simple!
-        {% else %}
-        Just <a href="#sign-in-modal" data-toggle="modal">Sign In</a> with your GitHub account and <a href="{{url_for('zenodo_github.index')}}">click here</a> to start preserving your repositories.
-        {% endif %}
-      </div>
 
       <div class="well">
-        <h4>New to {{config.CFG_SITE_NAME}}?</h4>
+        <h4>INIS Upload Interface</h4>
         {% include "zenodo/benefits.html" %}
       </div>
 
       {%- if collection.id == 1 %}
-      <div class="well">
-        Zenodo is an open dependable home for the long-tail of science, enabling researchers to share and preserve any research outputs in any size, any format and from any science.
-      </div>
 
-      <a class="twitter-timeline" href="https://twitter.com/ZENODO_ORG" data-widget-id="331751059422855169">Tweets by @ZENODO_ORG</a>
+      <a class="twitter-timeline" href="https://twitter.com/INISsecretariat" data-widget-id="539451584691077120">Tweets by @INISsecretariat</a>
       {%- endif %}
       {%- endif %}
   </div>
