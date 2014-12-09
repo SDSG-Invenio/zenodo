@@ -415,6 +415,7 @@ class ZenodoForm(WebDepositForm):
             strip_string,
         ],
     )
+
     #
     # Collection
     #
@@ -468,66 +469,6 @@ class ZenodoForm(WebDepositForm):
             'communities', 'title', 'description',
         ], {'indication': 'required'}),
     ]
-#        ('License', [
-#            'access_right', 'embargo_date', 'license',
-#        ], {
-#            'indication': 'required',
-#            #'description': 'Unless you explicitly specify the license conditions below for Open Access and Embargoed Access uploads,'
-#            #' you agree to release your data files under the terms of the Creative Commons Zero (CC0) waiver.'
-#            #' All authors of the data and publications have agreed to the terms of this waiver and license.'
-#        }),
-#        ('Country', [
-#            'communities',
-#        ], {
-#            'indication': 'recommended',
-#            'description': Markup('Any user can create a community collection on %(CFG_SITE_NAME)s (<a href="/communities/">browse countries</a>). Specify communities which you wish your upload to appear in. The owner of the community will be notified, and can either accept or reject your request.' % {'CFG_SITE_NAME': CFG_SITE_NAME})
-#        })
-#        ]
-#        ('Funding', [
-#            'grants',
-#        ], {
-#            'indication': 'recommended',
-#            'description': '%s is integrated into reporting lines for research funded by the European Commission via OpenAIRE (http://www.openaire.eu). Specify grants which have funded your research, and we will let your funding agency know!' % CFG_SITE_NAME,
-#        }),
-#        ('Related datasets/publications', [
-#            'related_identifiers',
-#        ], {
-#            'classes': '',
-#            'indication': 'recommended',
-#            'description': 'Specify identifiers of related publications and datasets. Supported identifiers include: DOI, Handle, ARK, PURL, ISSN, ISBN, PubMed ID, PubMed Central ID, ADS Bibliographic Code, arXiv, Life Science Identifiers (LSID), EAN-13, ISTC, URNs and URLs.'
-#        }),
-#        ('References', [
-#            'references',
-#        ], {
-#            'classes': '',
-#            'indication': 'optional',
-#        }),
-#        ('Journal', [
-#            'journal_title', 'journal_volume', 'journal_issue',
-#            'journal_pages',
-#        ], {
-#            'classes': '',
-#            'indication': 'optional',
-#        }),
-#        ('Conference', [
-#            'conference_title', 'conference_acronym', 'conference_dates',
-#            'conference_place', 'conference_url', '-', 'conference_session',
-#            'conference_session_part'
-#        ], {
-#            'classes': '',
-#            'indication': 'optional',
-#        }),
-#        ('Book/Report/Chapter', [
-#            'imprint_publisher',  'imprint_place', 'imprint_isbn', '-',
-#            'partof_title', 'partof_pages',
-#        ], {'classes': '', 'indication': 'optional', }),
-#        ('Thesis', [
-#            'thesis_university', 'thesis_supervisors',
-#        ], {
-#            'classes': '',
-#            'indication': 'optional',
-#        }),
-#    ]
 
 
 def filter_fields(groups):
