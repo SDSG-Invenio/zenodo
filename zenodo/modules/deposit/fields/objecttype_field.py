@@ -36,16 +36,17 @@ UPLOAD_TYPE_ICONS = dict([(t[0], t[3]) for t in UPLOAD_TYPES])
 
 
 def subtype_processor(form, field, submit=False, fields=None):
-    form.image_type.flags.hidden = True
-    form.image_type.flags.disabled = True
-    form.publication_type.flags.hidden = True
-    form.publication_type.flags.disabled = True
-    if field.data == 'publication':
-        form.publication_type.flags.hidden = False
-        form.publication_type.flags.disabled = False
-    elif field.data == 'image':
-        form.image_type.flags.hidden = False
-        form.image_type.flags.disabled = False
+    pass
+#    form.image_type.flags.hidden = True
+#    form.image_type.flags.disabled = True
+#    form.publication_type.flags.hidden = True
+#    form.publication_type.flags.disabled = True
+#    if field.data == 'publication':
+#        form.publication_type.flags.hidden = False
+#        form.publication_type.flags.disabled = False
+#    elif field.data == 'image':
+#        form.image_type.flags.hidden = False
+#        form.image_type.flags.disabled = False
 
 
 def set_license_processor(form, field, submit=False, fields=None):

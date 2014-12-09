@@ -23,7 +23,7 @@
 from __future__ import absolute_import
 
 #import json
-from datetime import date
+from datetime import date, datetime
 
 from flask import render_template, url_for, request
 from flask.ext.restful import fields, marshal
@@ -302,15 +302,18 @@ def process_recjson_new(deposition, recjson):
         deposition_id=deposition.id,
     )
 
+    recjson['title'] = recjson['provisional_communities'][0] + ' - ' + datetime.isoformat(datetime.now())
+    recjson['valid'] = 'Unknown'
+
     # ===========
     # Communities
     # ===========
     # Specific Zenodo user collection, used to curate content for
     # Zenodo
-    if CFG_ZENODO_USER_COLLECTION_ID not in recjson['provisional_communities']:
-        recjson['provisional_communities'].append(
-            CFG_ZENODO_USER_COLLECTION_ID
-        )
+    #if CFG_ZENODO_USER_COLLECTION_ID not in recjson['provisional_communities']:
+    #    recjson['provisional_communities'].append(
+    #        CFG_ZENODO_USER_COLLECTION_ID
+    #    )
 
     # Specific Zenodo user collection for OpenAIRE (used to curate
     # FP7 funded research)
@@ -497,11 +500,12 @@ def run_tasks(update=False):
         sip.task_ids.append(task_id)
 
         for c in communities:
-            task_id = task_low_level_submission(
-                'webcoll', 'webdeposit', '-c', 'provisional-user-%s' % c,
-                *common_args
-            )
-            sip.task_ids.append(task_id)
+            if c != 'zenodo':
+                task_id = task_low_level_submission(
+                    'webcoll', 'webdeposit', '-c', 'provisional-user-%s' % c,
+                    *common_args
+                )
+                sip.task_ids.append(task_id)
         d.update()
     return _run_tasks
 
