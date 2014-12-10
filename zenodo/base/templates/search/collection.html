@@ -81,11 +81,7 @@
 
         {% if collection.reclist %}
         <h2>Recent Uploads</h2>
-        {%- if collection.name.startswith("user-") or collection.name.startswith("provisional-") -%}
-            {%- set reclist = collection.reclist[-10:]|reverse -%}
-        {%- else -%}
-            {%- set reclist = collection.reclist|zenodo_curated(10, open_only=True, reverse=True) -%}
-        {%- endif -%}
+        {%- set reclist = collection.reclist[-10:]|reverse -%}
         {% for recid in reclist %}
           <div class="row">
             <div class="col-md-12 record-list-elem">
