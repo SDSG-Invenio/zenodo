@@ -38,13 +38,28 @@
 
         $('#author_affiliations_link').click(function() {
             $('#authors_short').toggle('slow', function() {
-                if ($('#author_affiliations_link').html() == "(hide affiliations)") {
-                    $('#author_affiliations_link').html("(show affiliations)");
+                if ($('#author_affiliations_link').html() == "(hide TRNs)") {
+                    $('#author_affiliations_link').html("(show TRNs)");
                 } else {
-                    $('#author_affiliations_link').html("(hide affiliations)");
+                    $('#author_affiliations_link').html("(hide TRNs)");
                 }
             });
             $('#authors_long').toggle('slow', function() {});
+        });
+    });
+
+    $(document).ready(function(){
+        $('#affix-outer').height($('#navbar').height());
+
+        $('#trns_link').click(function() {
+            $('#trns_short').toggle('slow', function() {
+                if ($('#trns_link').html() == "(hide TRNs)") {
+                    $('#trns_link').html("(show TRNs)");
+                } else {
+                    $('#trns_link').html("(hide TRNs)");
+                }
+            });
+            $('#trns_long').toggle('slow', function() {});
         });
     });
 

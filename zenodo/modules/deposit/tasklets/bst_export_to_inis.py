@@ -44,41 +44,28 @@ def generate_msg(recid):
     return (subject, msg)
 
 
-def create_marcxml_header():
-    """
-    Creates the MARC xml header
-    @return: the marcxml header
-    @rtype: string
-    """
-
-    marcxml_output = '<?xml version="1.0" encoding="UTF-8"?>\n'
-    marcxml_output += '<collection xmlns="http://www.loc.gov/MARC21/slim">'
-    return marcxml_output
+def wrap_xml(content):
+    return """<?xml version="1.0" encoding="UTF-8"?>
+              <collection xmlns="http://www.loc.gov/MARC21/slim">
+              %(content)s
+              </collection>
+           """ % {'content': content}
 
 
-def create_marcxml_footer(marcxml_output):
-    """
-    Creates the MARC xml footer.
-    @param marcxml_output: the final marcxml output
-    @type param: string
-    @return: the final marcxml output plus marcxml footer
-    @rtype: string
-    """
-
-    marcxml_output += '\n</collection>\n'
-    return marcxml_output
+def wrap_record(recid, content):
+    return """<record>
+                  <controlfield tag="001">%(recid)s</controlfield>
+                  %(content)s
+              </record>
+           """ % {'recid': str(recid), 'content': content}
 
 
-def create_marxml_validation_tag(recid, valid):
-    record_spam_xml = """
-                      <record>
-                        <controlfield tag="001">%(recid)s</controlfield>
-                        <datafield tag="911" ind1=" " ind2=" ">
-                          <subfield code="a">%(valid)s</subfield>
-                        </datafield>
-                      </record>
-                      """ % {'recid': str(recid), 'valid': str(bool(valid))}
-    return record_spam_xml
+def create_marcxml_tag(content, tag, ind1=' ', ind2=' ', sub='a'):
+    return """<datafield tag="%(tag)s" ind1="%(ind1)s" ind2="%(ind2)s">
+                <subfield code="%(sub)s">%(content)s</subfield>
+              </datafield>
+           """ % {'content': content, 'tag': tag,
+                  'ind1': ind1, 'ind2': ind2, 'sub': sub}
 
 
 def find_all(a_str, sub):
@@ -215,9 +202,10 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
     store_last_export_date()
 
     i = 0
-    marcxml_output = create_marcxml_header()
+    marcxml_output = ':'
 
     for recid in recids_to_check:
+        record = ''
         if all_file_names_in_TRNs(recid):
             i += 1
             try:
@@ -250,21 +238,22 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
                         filename = docname + bibdocfile.format
                     copy2(current_filepath, directory + filename)
 
-            marcxml_output += create_marxml_validation_tag(recid, True)
-
-    #        f = open(str(recid) + '.xml', 'w')
-    #        f.write(get_marcxml_from_record(recid))
-    #        f.close()
+            record += create_marcxml_tag(content="True", tag='911')
 
         else:
             write_message("pdfs and TRN don't match in recid: " + str(recid))
             (subject, body) = generate_msg(recid)
             message_id = create_message(uid_from=1, users_to_str=get_fieldvalues(recid, "8560_y"), msg_subject=subject, msg_body=body)
             send_message(get_fieldvalues(recid, "8560_w"), message_id)
-            marcxml_output += create_marxml_validation_tag(recid, False)
+            record += create_marcxml_tag(content="False", tag="911")
+
+        for trn in get_TRNs(recid):
+            record += create_marcxml_tag(content=trn, tag="912")
+
+        marcxml_output += wrap_record(recid, record)
 
     if len(recids_to_check) > 0:
-        marcxml_output = create_marcxml_footer(marcxml_output)
+        marcxml_output = wrap_xml(marcxml_output)
         current_date = datetime.now()
         file_path_fd, file_path_name = mkstemp(suffix='.xml',
                                                prefix="records_with_validation_tag_%s" %

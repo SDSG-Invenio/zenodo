@@ -170,6 +170,13 @@ class Field_46:
 fixtures.FieldData.Field_46 = Field_46
 
 
+class Field_47:
+    code = u'trn'
+    id = 47
+    name = u'trn'
+fixtures.FieldData.Field_47 = Field_47
+
+
 class Tag_227:
     id = 227
     value = u'0247_a'
@@ -202,6 +209,14 @@ class Tag_230:
 fixtures.TagData.Tag_230 = Tag_230
 
 
+class Tag_231:
+    id = 231
+    value = u'912__a'
+    recjson_value = u'trn'
+    name = u'trn'
+fixtures.TagData.Tag_231 = Tag_231
+
+
 class FieldTag_227_18:
     score = 100
     id_tag = fixtures.TagData.Tag_227.id
@@ -227,4 +242,11 @@ class FieldTag_230_46:
     score = 100
     id_tag = fixtures.TagData.Tag_230.id
     id_field = fixtures.FieldData.Field_46.id
-fixtures.FieldTagData.FieldTag_229_46 = FieldTag_230_46
+fixtures.FieldTagData.FieldTag_230_46 = FieldTag_230_46
+
+
+class FieldTag_231_47:
+    score = 100
+    id_tag = fixtures.TagData.Tag_231.id
+    id_field = fixtures.FieldData.Field_47.id
+fixtures.FieldTagData.FieldTag_231_47 = FieldTag_231_47

@@ -71,6 +71,21 @@ class IdxINDEX_29:
 fixtures.IdxINDEXData.IdxINDEX_29 = IdxINDEX_29
 
 
+class IdxINDEX_30:
+        last_updated = None
+        description = u'This index TRNs.'
+        stemming_language = u''
+        id = 30
+        indexer = u'native'
+        name = u'trn'
+        synonym_kbrs = u''
+        remove_stopwords = u'No'
+        remove_html_markup = u'No'
+        remove_latex_markup = u'No'
+        tokenizer = u'BibIndexDefaultTokenizer'
+fixtures.IdxINDEXData.IdxINDEX_30 = IdxINDEX_30
+
+
 class IdxINDEXField_27_45:
     regexp_alphanumeric_separators = u''
     regexp_punctuation = u'[.,:;?!"]'
@@ -93,3 +108,11 @@ class IdxINDEXField_29_18:
     id_idxINDEX = fixtures.IdxINDEXData.IdxINDEX_29.id
     id_field = search.fixtures.FieldData.Field_18.id
 fixtures.IdxINDEXFieldData.IdxINDEXField_29_18 = IdxINDEXField_29_18
+
+
+class IdxINDEXField_30_47:
+    regexp_alphanumeric_separators = u''
+    regexp_punctuation = u'[.,:;?!"]'
+    id_idxINDEX = fixtures.IdxINDEXData.IdxINDEX_30.id
+    id_field = search.fixtures.FieldData.Field_47.id
+fixtures.IdxINDEXFieldData.IdxINDEXField_30_47 = IdxINDEXField_30_47
