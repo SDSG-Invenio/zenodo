@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 ## This file is part of Zenodo.
-## Copyright (C) 2012, 2013, 2014 CERN.
+## Copyright (C) 2012, 2013, 2014, 2015 CERN.
 ##
 ## Zenodo is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -438,11 +438,6 @@ class ZenodoForm(WebDepositForm):
     #
     # File upload field
     #
-    plupload_file = fields.FileUploadField(
-        label="",
-        widget=plupload_widget,
-        export_key=False
-    )
 
     def validate_plupload_file(form, field):
         """Ensure minimum one file is attached."""
@@ -450,6 +445,15 @@ class ZenodoForm(WebDepositForm):
             # Tested in API by a separate workflow task.
             if len(form.files) == 0:
                 raise ValidationError("You must provide minimum one file.")
+            elif sum(p.name.endswith('.ttf') for p in form.files) != 1:
+                raise ValidationError("You must provide one TTF file.")
+
+    plupload_file = fields.FileUploadField(
+        label="",
+        widget=plupload_widget,
+        validators=[validate_plupload_file, ],
+        export_key=False
+    )
 
     #
     # Form configuration
