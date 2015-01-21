@@ -31,7 +31,6 @@ from wtforms.validators import ValidationError
 
 #from invenio.config import CFG_SITE_NAME, CFG_SITE_SUPPORT_EMAIL
 from invenio.config import CFG_DATACITE_DOI_PREFIX
-#from invenio.config import CFG_COUNTRY_LIST
 
 from invenio.base.i18n import _
 from invenio.utils.html import CFG_HTML_BUFFER_ALLOWED_TAG_WHITELIST
@@ -373,15 +372,16 @@ class ZenodoForm(WebDepositForm):
 #	validators=[validators.required()],
 #    )
 
-#    title = fields.TitleField(
-#        #validators=[validators.required()],
-#        description='Required.',
-#        filters=[
-#            strip_string,
-#        ],
-#        export_key='title',
-#        icon='fa fa-book fa-fw',
-#    )
+    title = fields.TitleField(
+        #validators=[validators.required()],
+        description='Required.',
+        filters=[
+            strip_string,
+        ],
+        export_key='title',
+        hidden=True,
+        icon='fa fa-book fa-fw',
+    )
 
     description = fields.TextAreaField(
         label="Description",
@@ -426,12 +426,13 @@ class ZenodoForm(WebDepositForm):
         ),
         validators=[
             community_validator,
-            validators.required()
+            #validators.required()
         ],
         widget=TagListWidget(template="{{title}}"),
         widget_classes=' dynamic-field-list',
         icon='fa fa-globe fa-fw',
         label='Country',
+        hidden=True,
         export_key='provisional_communities',
     )
 

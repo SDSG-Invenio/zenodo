@@ -24,23 +24,30 @@
 
 
     <div id="field-plupload_file">
-    <div class="jumbotron" id="upload">
-        <h1>Upload</h1>
+    <div class="jumbotron" id="upload" style="margin-bottom: 0px;">
+        <h1 style="margin-top: 0px; padding-bottom: 20px;">Upload</h1>
         {% if community %}<h4>{{community.title}}</h4>{% endif %}
-        <p>Share your research &mdash; all research outputs from across all fields of
-        science are welcome.</p>
+        <h3>Share your records &mdash; upload <b>one TTF file</b> and attach the correspondent <b>PDF files</b>.</h3>
         <p>
             <div id="uploader-uploaders" class="row text-center">
                 <div id="local" class="col-sm-12 col-md-4 text-right">
-                 <a id="pluploader" href="javascript:;" class="btn btn-default btn-lg pluploader">Choose files ...</a>
-                <br><small class="text-muted"> Max 2GB per file</small></div>
-{#
-##                <div id="or" class="col-sm-12 col-md-3">—&nbsp;OR&nbsp;—</div>
-##                <div id="dropbox" class="col-sm-12 col-md-4"><a id="dropboxuploader" href="javascript:;" class="dropbox-dropin-btn dropbox-dropin-default dropboxuploader">
-##      <span class="dropin-btn-status"></span>
-##      Choose from Dropbox
-##      </a></div>
-#}
+                  <a id="pluploader" href="javascript:;" class="btn btn-default btn-lg pluploader">Choose files ...</a>
+                </div>
+            </div>
+            <small class="text-muted">Send us your TTF file (and the fulltext PDFs)</small>
+        </p>
+    </div>
+
+    <div class="jumbotron" id="upload" style="margin-bottom: 0px;">
+        <h1 style="margin-top: 0px; padding-bottom: 20px;">Input</h1>
+        {% if community %}<h4>{{community.title}}</h4>{% endif %}
+        <h3>Input your metadata in a form to create an INIS record.</h3>
+        <p>
+            <div id="uploader-uploaders" class="row text-center">
+                <div id="local" class="col-sm-12 col-md-4 text-right">
+                  <a id="pluploader" href="javascript:;" class="btn btn-default btn-lg pluploader disabled">New record ...</a>
+                  <br><small class="text-muted">Not yet implemented</small>
+                </div>
             </div>
         </p>
     </div>

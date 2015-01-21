@@ -59,6 +59,8 @@ from invenio.ext.sqlalchemy import db
 from invenio.base.helpers import unicodifier
 from invenio.modules.records.api import Record
 
+from zenodo.config import CFG_MEMBER_STATES_DICT
+
 __all__ = ['upload']
 
 CFG_LICENSE_KB = "licenses"
@@ -123,6 +125,7 @@ def process_draft(draft):
                                           CFG_ECFUNDED_USER_COLLECTION_ID],
         draft.values.get('communities', [])
     )
+
     return draft
 
 
@@ -149,6 +152,16 @@ def process_recjson(deposition, recjson):
     # ===========
     try:
         communities = recjson.get('provisional_communities', [])
+
+        user = UserInfo(deposition.user_id)
+        if not user.is_admin:
+            member = user.info['group']
+            if len(member) > 0:
+                user_community = {}
+                user_community['identifier'] = CFG_MEMBER_STATES_DICT[member[0]]
+                user_community['provisional'] = False
+                user_community['title'] = member[0]
+            communities.append(user_community)
 
         # Extract identifier (i.e. elements are mapped from dict ->
         # string)
@@ -302,7 +315,7 @@ def process_recjson_new(deposition, recjson):
         deposition_id=deposition.id,
     )
 
-    recjson['title'] = recjson['provisional_communities'][0] + ' - ' + datetime.isoformat(datetime.now())
+    recjson['title'] = recjson['communities'][0] + ' - ' + datetime.isoformat(datetime.now())
     recjson['valid'] = 'Unknown'
 
     # ===========
@@ -502,7 +515,7 @@ def run_tasks(update=False):
         for c in communities:
             if c != 'zenodo':
                 task_id = task_low_level_submission(
-                    'webcoll', 'webdeposit', '-c', 'provisional-user-%s' % c,
+                    'webcoll', 'webdeposit', '-c', 'user-%s' % c,
                     *common_args
                 )
                 sip.task_ids.append(task_id)

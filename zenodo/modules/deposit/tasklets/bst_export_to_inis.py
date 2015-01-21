@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##
 ## This file is part of Invenio.
-## Copyright (C) 2014 CERN.
+## Copyright (C) 2014, 2015 CERN.
 ##
 ## Invenio is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -193,7 +193,7 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
     elif directory[-1] != '/':
         directory = directory + '/'
 
-    directory += 'W' + str(date.today().year)[2:] + str(date.today().isocalendar()[1]) + '/'
+    directory += 'W%s%02d/' % (str(date.today().year)[2:], date.today().isocalendar()[1])
 
     if not os.path.exists(directory):
         os.makedirs(directory)
