@@ -148,10 +148,10 @@
 
 {% block body %}
 <div class="row" id="file_container">
-    <div class="col-sm-6 col-md-8">
+    <div class="col-sm-6 col-md-7">
         {% for field in form %}{{field(community=community)}}{% endfor %}
     </div>
-    <div class="col-sm-6 col-md-4">
+    <div class="col-sm-6 col-md-5">
         {% include "deposit/myview.html" %}
     </div>
 </div>

@@ -53,53 +53,53 @@ def register_menu_items():
     item = current_menu.submenu('breadcrumbs.zenodo_base')
     item.register('', '')
 
-    item = current_menu.submenu('main.browse')
-    item.register('', _('Browse'), order=3)
-
-    item = current_menu.submenu('main.browse.datasets')
-    item.register(
-        'search.collection', _('Datasets'), order=1,
-        endpoint_arguments_constructor=lambda: dict(name='datasets')
-    )
-
-    item = current_menu.submenu('main.browse.images')
-    item.register(
-        'search.collection', _('Images'), order=2,
-        endpoint_arguments_constructor=lambda: dict(name='images')
-    )
-
-    item = current_menu.submenu('main.browse.posters')
-    item.register(
-        'search.collection', _('Posters'), order=3,
-        endpoint_arguments_constructor=lambda: dict(name='posters')
-    )
-
-    item = current_menu.submenu('main.browse.presentations')
-    item.register(
-        'search.collection', _('Presentations'), order=4,
-        endpoint_arguments_constructor=lambda: dict(name='presentations')
-    )
-
-    item = current_menu.submenu('main.browse.publications')
-    item.register(
-        'search.collection', _('Publications'), order=5,
-        endpoint_arguments_constructor=lambda: dict(name='publications')
-    )
-
-    item = current_menu.submenu('main.browse.software')
-    item.register(
-        'search.collection', _('Software'), order=6,
-        endpoint_arguments_constructor=lambda: dict(name='software')
-    )
-
-    item = current_menu.submenu('main.browse.videos')
-    item.register(
-        'search.collection', _('Video/Audio'), order=7,
-        endpoint_arguments_constructor=lambda: dict(name='videos')
-    )
-
-    item = current_menu.submenu('main.getstarted')
-    item.register('', _('Get started'), order=5)
+#    item = current_menu.submenu('main.browse')
+#    item.register('', _('Browse'), order=3)
+#
+#    item = current_menu.submenu('main.browse.datasets')
+#    item.register(
+#        'search.collection', _('Datasets'), order=1,
+#        endpoint_arguments_constructor=lambda: dict(name='datasets')
+#    )
+#
+#    item = current_menu.submenu('main.browse.images')
+#    item.register(
+#        'search.collection', _('Images'), order=2,
+#        endpoint_arguments_constructor=lambda: dict(name='images')
+#    )
+#
+#    item = current_menu.submenu('main.browse.posters')
+#    item.register(
+#        'search.collection', _('Posters'), order=3,
+#        endpoint_arguments_constructor=lambda: dict(name='posters')
+#    )
+#
+#    item = current_menu.submenu('main.browse.presentations')
+#    item.register(
+#        'search.collection', _('Presentations'), order=4,
+#        endpoint_arguments_constructor=lambda: dict(name='presentations')
+#    )
+#
+#    item = current_menu.submenu('main.browse.publications')
+#    item.register(
+#        'search.collection', _('Publications'), order=5,
+#        endpoint_arguments_constructor=lambda: dict(name='publications')
+#    )
+#
+#    item = current_menu.submenu('main.browse.software')
+#    item.register(
+#        'search.collection', _('Software'), order=6,
+#        endpoint_arguments_constructor=lambda: dict(name='software')
+#    )
+#
+#    item = current_menu.submenu('main.browse.videos')
+#    item.register(
+#        'search.collection', _('Video/Audio'), order=7,
+#        endpoint_arguments_constructor=lambda: dict(name='videos')
+#    )
+#
+#    item = current_menu.submenu('main.getstarted')
+#    item.register('', _('Get started'), order=5)
 
     def menu_fixup():
         # Change order
