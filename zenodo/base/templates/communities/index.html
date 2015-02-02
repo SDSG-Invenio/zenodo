@@ -1,0 +1,126 @@
+{#
+## This file is part of Invenio.
+## Copyright (C) 2013, 2014 CERN.
+##
+## Invenio is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; either version 2 of the
+## License, or (at your option) any later version.
+##
+## Invenio is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+## General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with Invenio; if not, write to the Free Software Foundation, Inc.,
+## 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+#}
+
+{% extends "communities/index_base.html" %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-6 col-md-6">
+    <h1>
+      <i class="fa fa-group"></i>
+      {{ _("INIS Members") }}
+    </h1>
+  </div>
+  <div class="col-sm-6 col-md-6">
+    {%- set args = request.args.copy().to_dict() -%}
+    {% if communities %}
+
+      <br />
+      <div class="form-inline">
+        
+        <div class="form-group pull-right">
+          <nav class="navbar navbar-default" role="navigation">
+            <div class="collapse navbar-collapse">
+              <form action="." method="GET" id="search_form" class="navbar-form" role="form">
+                <div class="input-group">
+                  {{ form.p(class_="form-control " + form.p.short_name, ) }}
+                  <span class="input-group-btn"  style="width: 1%;">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="glyphicon glyphicon-search glyphicon-white"></i> {{ _("Search") }}
+                   </button>
+                  </span>
+                </div>
+             </form>
+           </div>
+         </nav>
+         <p class="help-block hidden-xs">
+            {{ _('Showing members %(x_from)d to %(x_to)d out of %(x_total)d results.', x_from=r_from+1, x_to=r_to, x_total=r_total) }}
+          </p>
+       </div>
+      </div>
+
+  </div>
+      <br />
+
+      {%- for row in communities|batch(2) %}
+        <div class="row">
+          {%- for obj in row %}
+            {% if obj %}
+              <div class="col-sm-12 col-md-6">
+                <div class="well" style="height: auto;">
+                  <h4>{{ obj.title }}</h4>
+                  {%- for line in obj.description.splitlines() %}
+                  <p>{{ line }}</p>
+                  {%- endfor -%}
+                  <p>{{ obj.page }}</p>
+                  Submitters:
+                  {%- for user in users[obj.title] -%}
+                  <li>{{ user.nickname  }} - {{ user.email  }}</li>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {% endif %}
+          {%- endfor %}
+        </div>
+      {%- endfor %}
+
+      {% if pagination.total_count > pagination.per_page %}
+        <div align="center">
+          <ul class="pagination">
+            <li{{ ' class="disabled"'|safe if not pagination.has_prev }}>
+              {%- set new_args = args.copy() -%}
+              {%- do new_args.update({'page': 1}) -%}
+              <a title="first" href="{{ url_for('communities.index', **new_args) }}">«</a>
+            </li>
+            <li{{ ' class="disabled"'|safe if not pagination.has_prev }}>
+              {%- do args.update({'page': pagination.page-1 }) -%}
+              <a title="prev" href="{{ url_for('communities.index', **args) }}">&lsaquo;</a>
+            </li>
+            {%- for page_p in pagination.iter_pages() %}
+              {%- if page_p -%}
+                {%- set new_args = args.copy() -%}
+                {%- do new_args.update({'page': page_p}) -%}
+                <li{{ ' class="active"'|safe if page_p == pagination.page }}>
+                  <a href="{{ url_for('communities.index', **new_args) }}">{{ page_p }}</a>
+                </li>
+              {%- else -%}
+                <li class="disabled"><a href="#">...</a></li>
+              {%- endif -%}
+            {%- endfor -%}
+            <li{{ ' class="disabled"'|safe if not pagination.has_next }}>
+              {%- set new_args = args.copy() -%}
+              {%- do new_args.update({'page': pagination.page+1}) -%}
+              <a href="{{ url_for('communities.index', **new_args) }}">&rsaquo;</a>
+            </li>
+            <li{{ ' class="disabled"'|safe if not pagination.has_next }}>
+              {%- set new_args = args.copy() -%}
+              {%- do new_args.update({'page': pagination.pages }) -%}
+              <a title="last" href="{{ url_for('communities.index', **new_args) }}">»</a>
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <p class="text-muted text-center">
+        <strong>{{ _('Your search did not match any INIS Members. Please try again.') }}</strong>
+      </p>
+    {% endif %}
+  </div>
+{% endblock %}

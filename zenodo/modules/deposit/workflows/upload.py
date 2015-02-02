@@ -23,9 +23,10 @@
 from __future__ import absolute_import
 
 #import json
-from datetime import date, datetime
+from datetime import date
 
-from flask import render_template, url_for, request
+from flask import render_template, url_for, request, \
+    current_app
 from flask.ext.restful import fields, marshal
 from flask.ext.login import current_user
 
@@ -60,6 +61,7 @@ from invenio.base.helpers import unicodifier
 from invenio.modules.records.api import Record
 
 from zenodo.config import CFG_MEMBER_STATES_DICT
+from invenio.legacy.bibrecord import get_fieldvalues
 
 __all__ = ['upload']
 
@@ -161,7 +163,8 @@ def process_recjson(deposition, recjson):
                 user_community['identifier'] = CFG_MEMBER_STATES_DICT[member[0]]
                 user_community['provisional'] = False
                 user_community['title'] = member[0]
-            communities.append(user_community)
+                communities.append(user_community)
+            current_app.logger.info('User group is ' + str(member))
 
         # Extract identifier (i.e. elements are mapped from dict ->
         # string)
@@ -174,6 +177,7 @@ def process_recjson(deposition, recjson):
             lambda x: x['identifier'],
             filter(lambda x: not x.get('provisional', False), communities)
         )
+        recjson['communities'] = recjson['communities'] + recjson['provisional_communities']
     except TypeError:
         # Happens on re-run
         pass
@@ -315,7 +319,7 @@ def process_recjson_new(deposition, recjson):
         deposition_id=deposition.id,
     )
 
-    recjson['title'] = recjson['communities'][0] + ' - ' + datetime.isoformat(datetime.now())
+    recjson['title'] = recjson['communities'][0] + ' - ' + recjson['title']
     recjson['valid'] = 'Unknown'
 
     # ===========
@@ -835,6 +839,7 @@ class upload(DepositionType):
             ),
             sip=d.get_latest_sip(),
             format_record=format_record,
+            get_fieldvalues=get_fieldvalues
         )
 
         return render_template('deposit/completed.html', **ctx)

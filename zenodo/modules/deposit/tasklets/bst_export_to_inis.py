@@ -24,6 +24,8 @@ Export records to be consumed by INIS
 """
 
 import os
+from urllib2 import urlopen
+from flask import current_app
 from datetime import datetime, date
 from tempfile import mkstemp
 from shutil import copy2
@@ -34,15 +36,35 @@ from invenio.legacy.bibdocfile.api import BibRecDocs
 from invenio.legacy.bibsched.bibtask import write_message, \
     task_sleep_now_if_required, task_update_progress, task_low_level_submission
 from invenio.modules.messages.query import create_message, send_message
+from invenio.legacy.bibrecord import get_fieldvalues
 
 
-def generate_msg(recid):
-    msg = """A batch (record %(recid)s) that you uploaded has not passed the verification process. \n
-            Please check your uploads page.\n\n
-            %(site_url)s/record/%(recid)s""" % {'recid': str(recid), 'site_url': CFG_SITE_URL}
+def generate_msg(recid, alerts):
+    msg = """A batch (record %(recid)s) that you uploaded has not passed the verification process.<br>
+            Please check your uploads page.<br>""" % {'recid': str(recid)}
+    msg += "Errors found:<br>"
+    for alert in alerts:
+        msg += "- " + alert + "<br>"
     subject = "Failed submission (record %(recid)s)" % {'recid': str(recid)}
+
     return (subject, msg)
 
+def get_country_code(recid):
+    collections = get_fieldvalues(recid, '980__a')
+    countries = [c[c.find('-')+1:] for c in collections if c.startswith('user-')]
+    if len(countries) == 1:
+        return countries[0]
+    else:
+        return 'ZZ'
+    
+def trn_exists(trn):
+    url = 'http://nkp.iaea.org/changerecord/inischangerecord.asmx/ProcRecords?list='
+    try:
+        response = urlopen(url + trn)
+        html = response.read()
+        return html.find('<string xmlns="http://nis.iaea.org/webservices/">1') > -1
+    except:
+        return False
 
 def wrap_xml(content):
     return """<?xml version="1.0" encoding="UTF-8"?>
@@ -103,10 +125,17 @@ def get_fulltext_names(recid):
     return names
 
 
-def all_file_names_in_TRNs(recid):
+def file_names_not_in_TRNs(recid):
     TRNs = set(get_TRNs(recid))
     names = set(get_fulltext_names(recid))
-    return names - TRNs == set()
+    diff = list(names - TRNs) # not in current upload
+    missing = []
+    for trn in diff:
+        if perform_request_search(p=trn, cc='communities', f='trn') == []: # not in IIM
+            if not trn_exists(trn): # not in INIS DB
+                missing.append(trn)
+    
+    return missing
 
 
 def get_last_export_date():
@@ -206,7 +235,8 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
 
     for recid in recids_to_check:
         record = ''
-        if all_file_names_in_TRNs(recid):
+        missing_TRNs = file_names_not_in_TRNs(recid)
+        if missing_TRNs == []:
             i += 1
             try:
                 bibarchive = BibRecDocs(recid)
@@ -215,6 +245,7 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
 
             write_message("Going to export record #%s" % recid)
 
+            current_app.logger.info("PROTOTYPE LOGGING: recid " + str(recid) + ' validated correctly')
             task_sleep_now_if_required()
             msg = "Processing recid  %s (%i/%i)" % (str(recid), i, len(recids_to_check))
             write_message(msg)
@@ -233,7 +264,7 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
 
                 for current_filepath in current_files:
                     if bibdocfile.format == '.ttf':
-                        filename = "INIS.CC."+str(recid)+".inp"
+                        filename = "INIS.%s.id.%d.inp " % (get_country_code(recid), recid)
                     else:
                         filename = docname + bibdocfile.format
                     copy2(current_filepath, directory + filename)
@@ -241,8 +272,16 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
             record += create_marcxml_tag(content="True", tag='911')
 
         else:
-            write_message("pdfs and TRN don't match in recid: " + str(recid))
-            (subject, body) = generate_msg(recid)
+            # use missing_TRNs for better logging
+            message = "Record " + str(recid) +" has PDFs with file names that do not correspond to any known TRNs. File names are: "
+            for trn in missing_TRNs:
+                if trn == missing_TRNs[-1]:
+                    message += '"' + trn + '"'
+                else:
+                    message += '"' + trn + '", '
+            write_message(message) 
+            current_app.logger.info("PROTOTYPE LOGGING: " + message)
+            (subject, body) = generate_msg(recid, [message])
             message_id = create_message(uid_from=1, users_to_str=get_fieldvalues(recid, "8560_y"), msg_subject=subject, msg_body=body)
             send_message(get_fieldvalues(recid, "8560_w"), message_id)
             record += create_marcxml_tag(content="False", tag="911")
@@ -261,7 +300,7 @@ def bst_export_to_inis(recids="", colls="", directory=None, force=0):
                                                dir=CFG_TMPDIR)
         os.write(file_path_fd, marcxml_output)
         os.close(file_path_fd)
-        task_low_level_submission('bibupload', 'deposit', '-a', file_path_name)
+        task_low_level_submission('bibupload', 'deposit', '-c', file_path_name)
 
     write_message("All records successfully exported")
 

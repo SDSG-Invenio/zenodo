@@ -23,7 +23,7 @@
 from __future__ import absolute_import
 
 import json
-#from datetime import date
+from datetime import datetime
 #from jinja2 import Markup
 from flask import request
 from wtforms import validators, widgets
@@ -301,11 +301,12 @@ class ZenodoForm(WebDepositForm):
     #
     # Fields
     #
-    upload_type = zfields.UploadTypeField(
-        validators=[validators.required()],
-        export_key='upload_type.type',
-        default='batch',
-    )
+#    upload_type = zfields.UploadTypeField(
+#        validators=[validators.required()],
+#        hidden=True,
+#        export_key='upload_type.type',
+#        default='batch',
+#    )
 #    publication_type = fields.SelectField(
 #        label='Type of publication',
 #        choices=[
@@ -374,18 +375,20 @@ class ZenodoForm(WebDepositForm):
 
     title = fields.TitleField(
         #validators=[validators.required()],
-        description='Required.',
+        description='Name your upload to be able to refer to it later.',
+        label='Upload name',
         filters=[
             strip_string,
         ],
         export_key='title',
-        hidden=True,
+        #hidden=True,
+        default=datetime.isoformat(datetime.now()),
         icon='fa fa-book fa-fw',
     )
 
     description = fields.TextAreaField(
         label="Description",
-        description='Required.',
+        description='Optional.',
         default='',
         icon='fa fa-pencil fa-fw',
         #validators=[validators.required(), ],
@@ -396,8 +399,8 @@ class ZenodoForm(WebDepositForm):
                  'Subscript', 'Superscript', ],
                 ['NumberedList', 'BulletedList', 'Blockquote'],
                 ['Undo', 'Redo', '-', 'Find', 'Replace', '-', 'RemoveFormat'],
-                ['Mathjax', 'SpecialChar', 'ScientificChar'], ['Source'],
-                ['Maximize'],
+              #  ['Mathjax', 'SpecialChar', 'ScientificChar'], ['Source'],
+              #  ['Maximize'],
             ],
             disableNativeSpellChecker=False,
             extraPlugins='scientificchar,mathjax,blockquote',
@@ -466,13 +469,13 @@ class ZenodoForm(WebDepositForm):
     # Grouping of fields
     #
     groups = [
-        ('Type of file(s)', [
-            'upload_type', 'publication_type', 'image_type', 'embargo_date',
-        ], {'indication': 'required'}),
+    #    ('Type of file(s)', [
+    #        'upload_type', 'publication_type', 'image_type', 'embargo_date',
+    #    ], {'indication': 'required'}),
 
         ('Basic information', [
             'communities', 'title', 'description',
-        ], {'indication': 'required'}),
+        ], {'indication': 'optional'}),
     ]
 
 
@@ -509,25 +512,25 @@ class ZenodoEditForm(ZenodoForm, EditFormMixin):
     """Specialized form for editing a record."""
 
     # Remove some fields.
-    doi = fields.DOIField(
-        label="Digital Object Identifier",
-        description="Optional. Did your publisher already assign a DOI to your"
-        " upload? If not, leave the field empty and we will register a new"
-        " DOI for you. A DOI allow others to easily and unambiguously cite"
-        " your upload.",
-        placeholder="e.g. 10.1234/foo.bar...",
-        validators=[
-            DOISyntaxValidator(),
-            minted_doi_validator(prefix=CFG_DATACITE_DOI_PREFIX),
-            invalid_doi_prefix_validator(prefix=CFG_DATACITE_DOI_PREFIX),
-        ],
-        processors=[
-            local_datacite_lookup
-        ],
-        export_key='doi',
-    )
-    prereserve_doi = None
-    plupload_file = None
+#    doi = fields.DOIField(
+#        label="Digital Object Identifier",
+#        description="Optional. Did your publisher already assign a DOI to your"
+#        " upload? If not, leave the field empty and we will register a new"
+#        " DOI for you. A DOI allow others to easily and unambiguously cite"
+#        " your upload.",
+#        placeholder="e.g. 10.1234/foo.bar...",
+#        validators=[
+#            DOISyntaxValidator(),
+#            minted_doi_validator(prefix=CFG_DATACITE_DOI_PREFIX),
+#            invalid_doi_prefix_validator(prefix=CFG_DATACITE_DOI_PREFIX),
+#        ],
+#        processors=[
+#            local_datacite_lookup
+#        ],
+#        export_key='doi',
+#    )
+#    prereserve_doi = None
+#    plupload_file = None
 
     _title = _('Edit upload')
     template = "deposit/edit.html"
