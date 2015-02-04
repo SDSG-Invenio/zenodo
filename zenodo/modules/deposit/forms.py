@@ -26,36 +26,36 @@ import json
 #from datetime import date
 #from jinja2 import Markup
 from flask import request
+
+from invenio.base.i18n import _
+from invenio.config import CFG_DATACITE_DOI_PREFIX
+
+#from invenio.config import CFG_SITE_NAME, CFG_SITE_SUPPORT_EMAIL
+
+from invenio.modules.deposit import fields
+from invenio.modules.deposit.autocomplete_utils import kb_autocomplete
+from invenio.modules.deposit.field_widgets import CKEditorWidget, \
+    ColumnInput, ExtendedListWidget, ItemWidget, TagInput, \
+    TagListWidget, plupload_widget
+#    date_widget, ButtonWidget
+from invenio.modules.deposit.filter_utils import sanitize_html, strip_string
+from invenio.modules.deposit.form import WebDepositForm
+from invenio.modules.deposit.processor_utils import PidNormalize, \
+    PidSchemeDetection, datacite_lookup, replace_field_data
+from invenio.modules.deposit.validation_utils import doi_syntax_validator, \
+    invalid_doi_prefix_validator, minted_doi_validator, pid_validator, \
+    required_if, unchangeable
+#    list_length, not_required_if, pre_reserved_doi_validator
+#from ...legacy.utils.zenodoutils import create_doi, filter_empty_helper
+from invenio.modules.knowledge.api import get_kb_mapping
+from invenio.utils.html import CFG_HTML_BUFFER_ALLOWED_TAG_WHITELIST
+
 from wtforms import validators, widgets
 from wtforms.validators import ValidationError
 
-#from invenio.config import CFG_SITE_NAME, CFG_SITE_SUPPORT_EMAIL
-from invenio.config import CFG_DATACITE_DOI_PREFIX
-
-from invenio.base.i18n import _
-from invenio.utils.html import CFG_HTML_BUFFER_ALLOWED_TAG_WHITELIST
-from invenio.modules.knowledge.api import get_kb_mapping
-from invenio.modules.deposit.form import WebDepositForm
-from invenio.modules.deposit.field_widgets import plupload_widget, \
-    ExtendedListWidget, TagListWidget, TagInput, ItemWidget, \
-    CKEditorWidget, ColumnInput
-#    date_widget, ButtonWidget
-from invenio.modules.deposit.filter_utils import strip_string, sanitize_html
-from invenio.modules.deposit.validation_utils import DOISyntaxValidator, \
-    invalid_doi_prefix_validator, required_if, \
-    pid_validator, minted_doi_validator, unchangeable
-#    list_length, not_required_if, pre_reserved_doi_validator
-from invenio.modules.deposit.processor_utils import datacite_lookup, \
-    PidSchemeDetection, PidNormalize, replace_field_data
-from invenio.modules.deposit.autocomplete_utils import kb_autocomplete
-#from ...legacy.utils.zenodoutils import create_doi, filter_empty_helper
-
+from . import fields as zfields
 from .autocomplete import community_autocomplete
 from .validators import community_validator
-from . import fields as zfields
-
-
-from invenio.modules.deposit import fields
 
 
 __all__ = ('ZenodoForm', )
@@ -233,7 +233,7 @@ class CreatorForm(WebDepositForm):
     orcid = fields.StringField(
         widget=widgets.HiddenInput(),
         processors=[
-            PidNormalize(scheme='orcid'),
+            PidNormalize(scheme_field='orcid'),
         ],
     )
 
@@ -517,7 +517,7 @@ class ZenodoEditForm(ZenodoForm, EditFormMixin):
         " your upload.",
         placeholder="e.g. 10.1234/foo.bar...",
         validators=[
-            DOISyntaxValidator(),
+            doi_syntax_validator,
             minted_doi_validator(prefix=CFG_DATACITE_DOI_PREFIX),
             invalid_doi_prefix_validator(prefix=CFG_DATACITE_DOI_PREFIX),
         ],
